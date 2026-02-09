@@ -6,22 +6,25 @@ import requests
 import re
 import os
 
-# --- GITHUB CONFIGURATION ---
-# Store these in .streamlit/secrets.toml for security
-GITHUB_TOKEN = st.secrets.get("GITHUB_TOKEN", "your_token_here")
-REPO_OWNER = "your_username"
-REPO_NAME = "your_quiz_repo"
-BRANCH = "main"
+# --- 1. ACCESS SECRETS ---
+try:
+    GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"].strip()
+    REPO_OWNER = st.secrets["REPO_OWNER"].strip()
+    REPO_NAME = st.secrets["REPO_NAME"].strip()
+    BRANCH = st.secrets.get("BRANCH", "main").strip()
+except KeyError:
+    st.error("Missing secrets! Please configure GITHUB_TOKEN, REPO_OWNER, and REPO_NAME in your secrets.")
+    st.stop()
 
+# --- 2. PDF PARSING LOGIC ---
 def parse_rrb_pdf(uploaded_file):
-    """Extracts 100 questions from the uploaded PDF stream."""
     all_questions = []
     with pdfplumber.open(uploaded_file) as pdf:
         full_text = ""
         for page in pdf.pages:
             full_text += page.extract_text() + "\n"
 
-    # Split by Question markers (Q.1, Q.2, etc.)
+    # Split the text into blocks starting with Q.1, Q.2, etc.
     blocks = re.split(r'Q\.\d+', full_text)[1:]
     
     for idx, block in enumerate(blocks):
@@ -30,15 +33,15 @@ def parse_rrb_pdf(uploaded_file):
         options = []
         answer = ""
 
-        # Parsing logic tailored to the provided PDF structure
         for line in lines:
-            # Detect options (e.g., 1. Option, X 2. Option, ✔3. Option)
+            # Match options like "1. Option", "X 2. Option", or "✔ 3. Option"
             if re.match(r'^([X✔]?\s*[1-4]\.)', line):
                 clean_opt = re.sub(r'^[X✔]?\s*[1-4]\.\s*', '', line)
                 options.append(clean_opt)
-                if '✔' in line or 'Ans' in line: # Marking the correct one
+                # Identify correct answer based on green tick or Ans marker
+                if '✔' in line or 'Ans' in line:
                     answer = clean_opt
-            elif not options and "Ans" not in line:
+            elif not options and "Ans" not in line and "Source" not in line:
                 question_text += line + " "
 
         if question_text and len(options) >= 2:
@@ -46,81 +49,121 @@ def parse_rrb_pdf(uploaded_file):
                 "id": idx + 1,
                 "question": question_text.strip(),
                 "options": options[:4],
-                "answer": answer if answer else options[0] # Fallback
+                "answer": answer if answer else (options[0] if options else "")
             })
     return all_questions
 
+# --- 3. GITHUB API LOGIC ---
 def push_to_git(filename, content):
-    """Pushes the JSON file to GitHub quizzes/ folder."""
     url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/quizzes/{filename}"
-    headers = {"Authorization": f"token {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
+    headers = {
+        "Authorization": f"token {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json"
+    }
     
-    # Get SHA if file exists to update it
+    # Check if file exists to get SHA (required for updates)
     res = requests.get(url, headers=headers)
     sha = res.json().get('sha') if res.status_code == 200 else None
     
     payload = {
-        "message": f"Add {filename}",
+        "message": f"Upload quiz: {filename}",
         "content": base64.b64encode(content.encode()).decode(),
         "branch": BRANCH
     }
-    if sha: payload["sha"] = sha
-    
+    if sha:
+        payload["sha"] = sha
+        
     return requests.put(url, headers=headers, json=payload)
 
+def fetch_quiz_list():
+    url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/quizzes"
+    headers = {"Authorization": f"token {GITHUB_TOKEN}"}
+    res = requests.get(url, headers=headers)
+    if res.status_code == 200:
+        return [f['name'] for f in res.json() if f['name'].endswith('.json')]
+    return []
+
+def fetch_quiz_content(filename):
+    url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/quizzes/{filename}"
+    headers = {"Authorization": f"token {GITHUB_TOKEN}"}
+    res = requests.get(url, headers=headers)
+    if res.status_code == 200:
+        encoded_content = res.json()['content']
+        return json.loads(base64.b64decode(encoded_content).decode())
+    return None
+
+# --- 4. STREAMLIT UI ---
 def main():
-    st.set_page_config(page_title="RRB AI Portal", layout="wide")
-    t1, t2 = st.tabs(["🚀 Converter", "📝 Practice Quiz"])
+    st.title("🚉 RRB JE Smart Quiz System")
+    tab1, tab2 = st.tabs(["📤 Upload & Convert", "✍️ Take Quiz"])
 
-    # --- TAB 1: PDF CONVERSION ---
-    with t1:
-        st.header("Upload New Exam Paper")
-        pdf_file = st.file_uploader("Drop RRB PDF here", type="pdf")
+    # TAB 1: CONVERTER
+    with tab1:
+        st.header("PDF to JSON Converter")
+        uploaded_file = st.file_uploader("Upload your RRB PDF", type="pdf")
         
-        if pdf_file:
-            # Extracting metadata from your PDF header [cite: 5]
-            exam_date = "16/12/2024" # In a full app, parse this from text
-            shift = "1"
-            
-            if st.button("Convert & Sync to Git"):
-                with st.spinner("Processing 100 questions..."):
-                    questions = parse_rrb_pdf(pdf_file)
-                    quiz_data = {
-                        "metadata": {"exam_name": "RRB JE", "test_date": exam_date, "shift": shift},
-                        "questions": questions
-                    }
-                    
-                    json_str = json.dumps(quiz_data, indent=4)
-                    file_name = f"RRB_JE_{exam_date.replace('/','_')}_S{shift}.json"
-                    
-                    response = push_to_git(file_name, json_str)
-                    if response.status_code in [200, 201]:
-                        st.success(f"Successfully uploaded {len(questions)} questions!")
+        if uploaded_file:
+            if st.button("Extract and Sync to GitHub"):
+                with st.spinner("Parsing PDF..."):
+                    questions = parse_rrb_pdf(uploaded_file)
+                    if not questions:
+                        st.error("No questions found. Check PDF format.")
                     else:
-                        st.error(f"Git Error: {response.text}")
+                        quiz_data = {
+                            "metadata": {
+                                "exam_name": "RRB JE",
+                                "test_date": "16/12/2024", # Customize parsing to extract this
+                                "shift": "1"
+                            },
+                            "questions": questions
+                        }
+                        
+                        json_content = json.dumps(quiz_data, indent=4)
+                        # Clean filename
+                        fname = f"RRB_JE_16Dec_S1_{len(questions)}Q.json"
+                        
+                        resp = push_to_git(fname, json_content)
+                        if resp.status_code in [200, 201]:
+                            st.success(f"Success! {len(questions)} questions pushed to GitHub.")
+                        else:
+                            st.error(f"Error {resp.status_code}: {resp.json().get('message')}")
 
-    # --- TAB 2: QUIZ RENDERING ---
-    with t2:
-        st.header("Exam Selection")
-        # Ensure 'quizzes' folder exists locally for the app to read
-        if not os.path.exists("quizzes"): os.makedirs("quizzes")
+    # TAB 2: QUIZ
+    with tab2:
+        st.header("Available Practice Papers")
+        quiz_files = fetch_quiz_list()
         
-        files = [f for f in os.listdir("quizzes") if f.endswith(".json")]
-        if files:
-            selected = st.selectbox("Choose a Paper", files)
-            with open(os.path.join("quizzes", selected), "r") as f:
-                data = json.load(f)
-            
-            st.info(f"Loaded: {data['metadata']['exam_name']} ({data['metadata']['test_date']})")
-            
-            score = 0
-            for q in data["questions"]:
-                st.write(f"**Q{q['id']}**: {q['question']}")
-                choice = st.radio("Options", q['options'], key=f"q_{q['id']}_{selected}", index=None)
-                st.divider()
-                # Scoring logic happens on a final submit button usually
+        if not quiz_files:
+            st.info("No quizzes found in the 'quizzes' folder on GitHub.")
         else:
-            st.warning("No papers found in local 'quizzes' folder. Sync from Git or upload one!")
+            selected_quiz = st.selectbox("Choose a paper", quiz_files)
+            if selected_quiz:
+                quiz_data = fetch_quiz_content(selected_quiz)
+                
+                if quiz_data:
+                    st.subheader(f"Paper: {quiz_data['metadata']['exam_name']} - {quiz_data['metadata']['test_date']}")
+                    
+                    user_answers = {}
+                    for q in quiz_data["questions"]:
+                        st.write(f"**Q{q['id']}:** {q['question']}")
+                        user_answers[q['id']] = st.radio("Options:", q['options'], key=f"q_{q['id']}_{selected_quiz}", index=None)
+                        st.write("---")
+
+                    if st.button("Submit Quiz"):
+                        score = 0
+                        total = len(quiz_data["questions"])
+                        for q in quiz_data["questions"]:
+                            if user_answers[q['id']] == q['answer']:
+                                score += 1
+                        
+                        # Apply RRB 1/3 negative marking logic
+                        wrong = total - score
+                        final_marks = score - (wrong * (1/3))
+                        
+                        st.balloons()
+                        st.sidebar.metric("Score", f"{score}/{total}")
+                        st.sidebar.metric("Net Marks", f"{final_marks:.2f}")
+                        st.sidebar.caption("Negative Marking: 1/3 per wrong answer")
 
 if __name__ == "__main__":
     main()
