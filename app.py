@@ -16,74 +16,72 @@ except Exception:
     st.error("Secrets not configured! Add GITHUB_TOKEN, REPO_OWNER, and REPO_NAME to Streamlit Secrets.")
     st.stop()
 
-# --- 2. INFINITE-BUFFER PARSER (Fixes Q.5, Q.32 across page breaks) ---
+# --- 2. GLOBAL SEARCH PARSER (Ensures 100 Questions) ---
 def parse_rrb_pdf(uploaded_file):
     all_questions = []
-    # Filters to scrub out page-break noise that confuses the parser
-    noise_filters = [
-        "Adda247", "Adda 247", "Google Play", "INDIAN R", 
-        "LWAY", "AILWAY", "Subject", "Test Prime", "Source"
-    ]
-
     with pdfplumber.open(uploaded_file) as pdf:
         full_text = ""
         for page in pdf.pages:
             text = page.extract_text()
             if text:
-                # Remove common header/footer strings immediately
-                for word in noise_filters:
-                    text = text.replace(word, "")
+                # Scrub noise that breaks the link between Q.5/Q.32 and their options
+                text = re.sub(r'Adda247|Adda 247|Google Play|INDIAN R|LWAY|AILWAY|Subject|Test Prime|Source', '', text)
                 full_text += text + "\n"
 
-    # Pattern for Q.1, Q.2, etc.
-    q_pattern = re.compile(r'Q\.(\d+)')
-    # Pattern for 1., 2., 3., 4. (ignoring leading X or ✔ symbols)
-    opt_pattern = re.compile(r'.*?([1-4])\.\s*(.*)')
+    # Strategy: Find the index of every "Q.1", "Q.2" ... "Q.100" in the text
+    indices = []
+    for i in range(1, 101):
+        # Look for "Q.1 " or "Q.1\n" to avoid matching "Q.10" when looking for "Q.1"
+        pattern = re.compile(rf'Q\.{i}\s')
+        match = pattern.search(full_text)
+        if match:
+            indices.append((i, match.start()))
 
-    current_q = None
-    lines = full_text.split('\n')
-    
-    for line in lines:
-        line = line.strip()
-        if not line: continue
+    # Sort indices just in case extraction was out of order
+    indices.sort(key=lambda x: x[1])
 
-        q_match = q_pattern.match(line)
-        if q_match:
-            # Save the previous question if it exists
-            if current_q and current_q['question']:
-                while len(current_q['options']) < 4:
-                    current_q['options'].append("Option not detected")
-                all_questions.append(current_q)
-            
-            # Start a new question state
-            current_q = {
-                "id": int(q_match.group(1)),
-                "question": line.replace(q_match.group(0), "").strip(),
-                "options": [],
-                "answer": ""
-            }
-            continue
+    for i in range(len(indices)):
+        q_num, start_pos = indices[i]
+        # End position is the start of the next question, or the end of the text
+        end_pos = indices[i+1][1] if i+1 < len(indices) else len(full_text)
+        
+        block = full_text[start_pos:end_pos]
+        lines = [line.strip() for line in block.split('\n') if line.strip()]
+        
+        question_parts = []
+        options = []
+        answer = ""
 
-        if current_q:
+        # Regex for options: ignores leading icons like X or ✔
+        opt_pattern = re.compile(r'.*?([1-4])\.\s*(.*)')
+
+        for line in lines:
+            # Skip the "Q.X" line itself for the question text
+            if line.startswith(f"Q.{q_num}"):
+                question_parts.append(line.replace(f"Q.{q_num}", "").strip())
+                continue
+
             opt_match = opt_pattern.match(line)
-            if opt_match and len(current_q['options']) < 4:
+            if opt_match and len(options) < 4:
                 opt_text = opt_match.group(2).strip()
-                current_q['options'].append(opt_text)
-                # Correct answer detection via Green Tick or Ans keyword
+                options.append(opt_text)
                 if '✔' in line or 'Ans' in line:
-                    current_q['answer'] = opt_text
-            elif len(current_q['options']) < 4:
-                # If we haven't found 4 options yet, any other text is question body
+                    answer = opt_text
+            elif len(options) < 4:
                 if "Ans" not in line:
-                    current_q['question'] += " " + line
+                    question_parts.append(line)
 
-    # Finalize the last question in the document
-    if current_q:
-        while len(current_q['options']) < 4:
-            current_q['options'].append("Option not detected")
-        all_questions.append(current_q)
+        # Pad missing options to keep the UI consistent
+        while len(options) < 4:
+            options.append("Option not detected")
 
-    all_questions.sort(key=lambda x: x['id'])
+        all_questions.append({
+            "id": q_num,
+            "question": " ".join(question_parts).strip(),
+            "options": options,
+            "answer": answer if answer else options[0]
+        })
+
     return all_questions
 
 # --- 3. GITHUB API HELPERS ---
@@ -114,77 +112,55 @@ def delete_from_git(filename):
 
 # --- 4. STREAMLIT INTERFACE ---
 def main():
-    st.set_page_config(page_title="RRB Exam Portal", layout="wide")
+    st.set_page_config(page_title="RRB 100-Question Portal", layout="wide")
     
-    # Sidebar: Repository Stats
-    st.sidebar.title("📊 Repository Status")
+    st.sidebar.title("📊 Repo Status")
     quiz_files = fetch_files()
     st.sidebar.write(f"Papers in Git: **{len(quiz_files)}**")
     
     if quiz_files:
-        st.sidebar.divider()
-        to_del = st.sidebar.selectbox("File Management", quiz_files)
-        if st.sidebar.button("🗑️ Delete Paper"):
+        to_del = st.sidebar.selectbox("Delete Paper", quiz_files)
+        if st.sidebar.button("🗑️ Delete"):
             delete_from_git(to_del)
             st.rerun()
-        if st.sidebar.button("🔥 WIPE REPO"):
-            for f in quiz_files: delete_from_git(f)
-            st.rerun()
+    
+    tab1, tab2 = st.tabs(["📤 Upload & Detect", "✍️ Practice Mode"])
 
-    tab1, tab2 = st.tabs(["📤 Bulk Upload & Check", "✍️ Practice Mode"])
-
-    # TAB 1: CONVERTER & ANALYSIS
     with tab1:
-        st.header("Convert Exam PDFs to Practice JSONs")
+        st.header("Bulk PDF to JSON")
         files = st.file_uploader("Upload RRB PDFs", type="pdf", accept_multiple_files=True)
         
         if files:
-            # Analyze the first file for question integrity
             data = parse_rrb_pdf(files[0])
             count = len(data)
-            st.subheader(f"Data Analysis: {files[0].name}")
-            
-            c1, c2 = st.columns(2)
-            c1.metric("Questions Detected", f"{count}/100")
+            st.subheader(f"Analysis: {files[0].name}")
+            st.metric("Questions Found", f"{count}/100")
             
             if count < 100:
-                # Find exactly which IDs are missing
                 found_ids = [q['id'] for q in data]
                 missing = [i for i in range(1, 101) if i not in found_ids]
-                c2.error(f"Missing IDs: {missing}")
+                st.error(f"Missing IDs: {missing}")
             else:
-                c2.success("Perfect capture! 100/100 questions found.")
-            
+                st.success("All 100 questions detected!")
+
             if st.button("🚀 Push to GitHub"):
                 for f in files:
                     qs = parse_rrb_pdf(f)
                     fname = f.name.replace(" ", "_").replace(".pdf", ".json")
                     push_to_git(fname, json.dumps({"questions": qs}, indent=4))
-                st.success("Successfully synced all papers to Git!")
+                st.success("Synced!")
                 st.rerun()
 
-    # TAB 2: QUIZ RENDERING
     with tab2:
         if quiz_files:
-            selected = st.selectbox("Select a Practice Paper", quiz_files)
-            # Fetch content from GitHub
+            selected = st.selectbox("Select Paper", quiz_files)
             url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/quizzes/{selected}"
             res = requests.get(url, headers=get_headers())
-            content = json.loads(base64.b64decode(res.json()['content']).decode())
-            
-            st.title(f"✍️ {selected}")
-            user_answers = {}
-            for q in content["questions"]:
+            quiz = json.loads(base64.b64decode(res.json()['content']).decode())
+            for q in quiz["questions"]:
                 st.write(f"**Q{q['id']}:** {q['question']}")
-                user_answers[q['id']] = st.radio("Options", q['options'], key=f"{selected}_{q['id']}", index=None)
+                st.radio("Options", q['options'], key=f"{selected}_{q['id']}", index=None)
                 st.divider()
-            
-            if st.button("Finish & Show Results"):
-                score = sum(1 for q in content["questions"] if user_answers[q['id']] == q['answer'])
-                st.sidebar.metric("Final Score", f"{score}/{len(content['questions'])}")
-                st.sidebar.caption("Negative Marking: 1/3 deduction per wrong answer")
-        else:
-            st.info("Upload PDFs in Tab 1 to start.")
 
 if __name__ == "__main__":
     main()
