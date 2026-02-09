@@ -90,12 +90,12 @@
         },
         {
             "id": 9,
-            "question": "Write the expanded form of (9a + 4b + 5c)2.",
+            "question": "",
             "options": [
+                "",
                 "81a2 + 16b2 + 25c2 + 72ab + 35bc + 90ac",
                 "81a2 + 16b2 + 25c2 + 72ab + 40bc + 100ac",
-                "81a2 + 16b2 + 25c2 + 72ab + 40bc + 90ac",
-                "81a2 + 16b2 + 25c2 + 76ab + 40bc + 90ac"
+                "81a2 + 16b2 + 25c2 + 72ab + 40bc + 90ac"
             ],
             "answer": "81a2 + 16b2 + 25c2 + 72ab + 35bc + 90ac"
         },
@@ -222,12 +222,12 @@
         },
         {
             "id": 21,
-            "question": "Find the value of K2 \u2212 3K, for which the number 58K764 is divisible by 11.",
+            "question": "",
             "options": [
+                "",
                 "40",
                 "60",
-                "52",
-                "48"
+                "52"
             ],
             "answer": "40"
         },
@@ -728,12 +728,12 @@
         },
         {
             "id": 67,
-            "question": "What is the power rating of a device that draws 1.75 A of current when connected to a 180-V source?",
+            "question": "180-V source?",
             "options": [
+                "75 A of current when connected to a",
                 "105 W",
                 "315 W",
-                "225 W",
-                "440 W"
+                "225 W"
             ],
             "answer": "105 W"
         },
@@ -860,12 +860,12 @@
         },
         {
             "id": 79,
-            "question": "Write the expanded form of (8a + 3b + 9c)2.",
+            "question": "",
             "options": [
+                "",
                 "64a2 + 9b2 + 81c2 + 48ab + 54bc + 144ac",
                 "64a2 + 9b2 + 81c2 + 52ab + 54bc + 144ac",
-                "64a2 + 9b2 + 81c2 + 48ab + 54bc + 154ac",
-                "64a2 + 9b2 + 81c2 + 48ab + 49bc + 144ac"
+                "64a2 + 9b2 + 81c2 + 48ab + 54bc + 154ac"
             ],
             "answer": "64a2 + 9b2 + 81c2 + 48ab + 54bc + 144ac"
         },
@@ -893,12 +893,12 @@
         },
         {
             "id": 82,
-            "question": "Write the expanded form of (4a + 9b + 5c)2.",
+            "question": "",
             "options": [
+                "",
                 "16a2 + 81b2 + 25c2 + 76ab + 90bc + 40ac",
                 "16a2 + 81b2 + 25c2 + 72ab + 90bc + 40ac",
-                "16a2 + 81b2 + 25c2 + 72ab + 90bc + 50ac",
-                "16a2 + 81b2 + 25c2 + 72ab + 85bc + 40ac"
+                "16a2 + 81b2 + 25c2 + 72ab + 90bc + 50ac"
             ],
             "answer": "16a2 + 81b2 + 25c2 + 76ab + 90bc + 40ac"
         },
