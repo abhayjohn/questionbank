@@ -15,7 +15,7 @@ except Exception:
     st.error("Secrets not configured! Add GITHUB_TOKEN, REPO_OWNER, and REPO_NAME to Streamlit Secrets.")
     st.stop()
 
-# --- 2. UPDATED PARSER (Fixes Missing Question Text in Q.5) ---
+# --- 2. THE ULTIMATE RRB PARSER (Fixes Empty Q.5 & Missing Q.32) ---
 def parse_rrb_pdf(uploaded_file):
     all_questions = []
     with pdfplumber.open(uploaded_file) as pdf:
@@ -27,54 +27,55 @@ def parse_rrb_pdf(uploaded_file):
                 text = re.sub(r'Adda247|Adda 247|Google Play|INDIAN R|LWAY|AILWAY|Test Prime|Source', '', text)
                 full_text += text + "\n"
 
-    # Strategy: Explicitly find every Q.1 through Q.100
+    # Strategy: Find char positions of every Q.1 through Q.100
+    indices = []
     for i in range(1, 101):
-        # Improved Regex: Capture the Q number and everything until the next Q number
-        pattern = re.compile(rf'Q\.{i}(?:\s|\n|(?=[A-Z0-9]))')
+        # Match Q.i followed by a space, newline, or digit/letter
+        pattern = re.compile(rf'Q\.{i}(?=\s|\n|[A-Z0-9])')
         match = pattern.search(full_text)
-        
         if match:
-            start_pos = match.end()
-            next_pattern = re.compile(rf'Q\.{i+1}(?:\s|\n|(?=[A-Z0-9]))')
-            next_match = next_pattern.search(full_text)
-            end_pos = next_match.start() if next_match else len(full_text)
-            
-            block = full_text[start_pos:end_pos]
-            lines = [line.strip() for line in block.split('\n') if line.strip()]
-            
-            question_parts = []
-            options = []
-            answer = ""
+            indices.append((i, match.start(), match.end()))
 
-            # Regex for options: ignores icons (X/✔)
-            opt_pattern = re.compile(r'.*?([1-4])\.\s*(.*)')
+    for i in range(len(indices)):
+        q_num, start_pos, content_start = indices[i]
+        # Block ends at the start of the next question
+        end_pos = indices[i+1][1] if i+1 < len(indices) else len(full_text)
+        
+        # We capture the line containing "Q.x" but extract only the text after the marker
+        block = full_text[content_start:end_pos]
+        lines = [line.strip() for line in block.split('\n') if line.strip()]
+        
+        question_parts = []
+        options = []
+        answer = ""
 
-            for line in lines:
-                opt_match = opt_pattern.match(line)
-                if opt_match and len(options) < 4:
-                    opt_text = opt_match.group(2).strip()
-                    options.append(opt_text)
-                    if '✔' in line or 'Ans' in line:
-                        answer = opt_text
-                elif len(options) < 4:
-                    # Capture everything as question text, including math symbols
-                    if "Ans" not in line:
-                        question_parts.append(line)
+        # Option pattern: ignores leading symbols (X/✔)
+        opt_pattern = re.compile(r'.*?([1-4])\.\s*(.*)')
 
-            while len(options) < 4:
-                options.append("Option not detected")
+        for line in lines:
+            opt_match = opt_pattern.match(line)
+            if opt_match and len(options) < 4:
+                opt_text = opt_match.group(2).strip()
+                options.append(opt_text)
+                if '✔' in line or 'Ans' in line:
+                    answer = opt_text
+            elif len(options) < 4:
+                # Still building the question text
+                if "Ans" not in line:
+                    question_parts.append(line)
 
-            # If question text is still empty, attempt a 'deep scan' for that block
-            q_text = " ".join(question_parts).strip()
-            if not q_text and lines:
-                q_text = lines[0] # Fallback to first available line
+        # Ensure question text is not lost even if it was on the same line as Q.x
+        q_text = " ".join(question_parts).strip()
+        
+        while len(options) < 4:
+            options.append("Option not detected")
 
-            all_questions.append({
-                "id": i,
-                "question": q_text,
-                "options": options,
-                "answer": answer if answer else (options[0] if options else "")
-            })
+        all_questions.append({
+            "id": q_num,
+            "question": q_text,
+            "options": options,
+            "answer": answer if answer else options[0]
+        })
 
     return all_questions
 
@@ -106,29 +107,30 @@ def delete_from_git(filename):
         return requests.delete(url, headers=get_headers(), json=payload)
     return res
 
-# --- 4. MAIN UI ---
+# --- 4. STREAMLIT UI ---
 def main():
     st.set_page_config(page_title="RRB Exam Master", layout="wide")
     
-    # Sidebar Management
-    st.sidebar.title("📊 Repository Management")
+    # Sidebar: Repository Management
+    st.sidebar.title("📊 Repository Status")
     quiz_files = fetch_files()
     st.sidebar.write(f"Papers in Git: **{len(quiz_files)}**")
     
     if quiz_files:
         st.sidebar.divider()
-        file_to_del = st.sidebar.selectbox("Select Paper to Delete", quiz_files)
+        st.sidebar.subheader("Management")
+        f_del = st.sidebar.selectbox("Select Paper", quiz_files)
         if st.sidebar.button("🗑️ Delete Selected"):
-            if delete_from_git(file_to_del).status_code == 200:
-                st.sidebar.success(f"Deleted {file_to_del}")
+            if delete_from_git(f_del).status_code == 200:
+                st.sidebar.success("Deleted!")
                 st.rerun()
-        if st.sidebar.button("🔥 WIPE ALL QUIZZES"):
+        if st.sidebar.button("🔥 WIPE ALL"):
             for f in quiz_files: delete_from_git(f)
             st.rerun()
 
-    tab1, tab2 = st.tabs(["📤 Upload & Detect", "✍️ Practice Quiz"])
+    tab1, tab2 = st.tabs(["📤 Upload & Detect", "✍️ Practice Mode"])
 
-    # TAB 1: CONVERTER & ANALYSIS
+    # TAB 1: CONVERTER
     with tab1:
         st.header("Bulk PDF to JSON Converter")
         files = st.file_uploader("Upload RRB PDFs", type="pdf", accept_multiple_files=True)
@@ -155,7 +157,7 @@ def main():
                 st.success("Successfully synced all papers!")
                 st.rerun()
 
-    # TAB 2: QUIZ RENDERING
+    # TAB 2: QUIZ
     with tab2:
         if quiz_files:
             selected = st.selectbox("Select a Practice Paper", quiz_files)
