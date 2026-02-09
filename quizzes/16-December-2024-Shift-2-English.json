@@ -1,0 +1,1104 @@
+{
+    "questions": [
+        {
+            "id": 1,
+            "question": "Pratap starts from Point A and drives 16 km towards south. He then takes a right turn, drives 13 km, turns right and drives 18 km. He then takes a right turn and drives 18 km. He takes a final right turn, drives 2 km and stops at Point P. How far (shortest distance) and towards which direction should he drive in order to reach Point A again? (All turns are 90\u00b0 turns only unless specified.)",
+            "options": [
+                "7 km to the west",
+                "5 km to the west",
+                "3 km to the west",
+                "6 km to the west"
+            ],
+            "answer": "7 km to the west"
+        },
+        {
+            "id": 2,
+            "question": "",
+            "options": [
+                "112.5%",
+                "150%",
+                "125%",
+                "137.5%"
+            ],
+            "answer": "112.5%"
+        },
+        {
+            "id": 3,
+            "question": "Sangeeta and Hemlata invest in a business in the ratio 1 : 3. If total profit is Rs. 2568, then what is difference between the profit (in Rs.) of Sangeeta and Hemlata?",
+            "options": [
+                "1384",
+                "1284",
+                "1184",
+                "1334"
+            ],
+            "answer": "1384"
+        },
+        {
+            "id": 4,
+            "question": "The length of each of the two equal sides of an isosceles triangle is 89 cm each and the length of its base is 78 cm. The area (in cm2) of the triangle is:",
+            "options": [
+                "3120",
+                "3134",
+                "3102",
+                "3139"
+            ],
+            "answer": "3120"
+        },
+        {
+            "id": 5,
+            "question": "Select the option in which the numbers share the same relationship as that shared by the given pairs of numbers. (NOTE: Operations should be performed on the whole numbers, without breaking down the numbers into its constituent digits. E.g. 13 \u2013 Operations on 13 such as adding/subtracting/multiplying etc. to 13 can be performed. Breaking down 13 into 1 and 3 and then performing mathematical operations on 1 and 3 is not allowed.) 18, 111 13, 81",
+            "options": [
+                "15, 93",
+                "19, 114",
+                "12, 69",
+                "17, 104"
+            ],
+            "answer": "15, 93"
+        },
+        {
+            "id": 6,
+            "question": "A conductor has a current of 150 mA flowing through it with a resistance of 0.8 \u03a9. Find the potential difference across the conductor.",
+            "options": [
+                "5.3 V",
+                "120 V",
+                "18.75 V",
+                "0.12 V"
+            ],
+            "answer": "5.3 V"
+        },
+        {
+            "id": 7,
+            "question": "The potential difference, V, across the ends of a given metallic wire in an electric circuit is directly proportional to the current flowing through it, provided its temperature remains the same. This is known as:",
+            "options": [
+                "Ohm's law",
+                "Resistance law",
+                "Newton's law",
+                "Ampere's law"
+            ],
+            "answer": "Ohm's law"
+        },
+        {
+            "id": 8,
+            "question": "If the interest earned during the 2nd year on a certain sum is \u20b99911, and the rate of interest is 10% per annum compounded annually, then the sum is:",
+            "options": [
+                "\u20b990100",
+                "\u20b990080",
+                "\u20b990055",
+                "\u20b990115"
+            ],
+            "answer": "\u20b990100"
+        },
+        {
+            "id": 9,
+            "question": "What was the venue of the 23rd meeting of the Shanghai Cooperation Organisation (SCO) in 2024?",
+            "options": [
+                "New Delhi, India",
+                "Sanghai, China",
+                "Islamabad, Pakistan",
+                "Dhaka, Bangladesh"
+            ],
+            "answer": "New Delhi, India"
+        },
+        {
+            "id": 10,
+            "question": "",
+            "options": [
+                "56.9%",
+                "52.6%",
+                "55.5%",
+                "53.3%"
+            ],
+            "answer": "56.9%"
+        },
+        {
+            "id": 11,
+            "question": "Aman completes his journey in 14 hours. He covers half the distance at 39 km/h and the rest at 45 km/h. What is the length of the journey (in Km)?",
+            "options": [
+                "592",
+                "591",
+                "594",
+                "585"
+            ],
+            "answer": "592"
+        },
+        {
+            "id": 12,
+            "question": "Based on the English alphabetical order, three of the following four letter-clusters are alike in a certain way and thus form a group. Which letter-cluster DOES NOT belong to that group? (Note: The odd one out is not based on the number of consonants/vowels or their position in the letter-cluster.)",
+            "options": [
+                "CJSX",
+                "JQZF",
+                "BIRW",
+                "UBKP"
+            ],
+            "answer": "CJSX"
+        },
+        {
+            "id": 13,
+            "question": "A number when increased by 50 %', gives 3030. The number is:",
+            "options": [
+                "1010",
+                "6060",
+                "2020",
+                "4040"
+            ],
+            "answer": "1010"
+        },
+        {
+            "id": 14,
+            "question": "What is formed when ammonium dichromate is heated?",
+            "options": [
+                "Nitrogen, oxygen and chromium oxide",
+                "Chromium oxide and water",
+                "Chromium and oxygen",
+                "Chromium oxide and nitrogen"
+            ],
+            "answer": "Nitrogen, oxygen and chromium oxide"
+        },
+        {
+            "id": 15,
+            "question": "A wire has a resistance of R. If its length is increased by a factor of 8 and its cross- sectional area is decreased by a factor of 4, what is its new resistance (R')?",
+            "options": [
+                "R' = 8 R",
+                "R' = 16 R",
+                "R' = 32 R",
+                "R' = 2 R"
+            ],
+            "answer": "R' = 8 R"
+        },
+        {
+            "id": 16,
+            "question": "A question is given, followed by two statements labelled I and II. Identify which of the statements is/are sufficient to answer the question. A, B, C, D and E are sitting in a straight line facing north. Who sits on the extreme left end? (I) Exactly 2 people sit between A and E. (II) Exactly 2 people sit between B and C.",
+            "options": [
+                "Data in Statement II alone is sufficient to answer the question, while data in Statement I alone is not.",
+                "Both Statements I and II put together are not sufficient to answer the question.",
+                "Both Statements I and II put together (and not independently) are sufficient to answer the question.",
+                "Data in Statement I alone is sufficient to answer the question, while data in Statement II alone is not."
+            ],
+            "answer": "Data in Statement II alone is sufficient to answer the question, while data in Statement I alone is not."
+        },
+        {
+            "id": 17,
+            "question": "The average marks of a student in six subjects is 94. After re-evaluation in three subjects the marks were changed to 89 from 75, 90 from 82 and 88 from 80. In the remaining subjects, the marks remained unchanged. Find the new average marks.",
+            "options": [
+                "99",
+                "95",
+                "98",
+                "97"
+            ],
+            "answer": "99"
+        },
+        {
+            "id": 18,
+            "question": "A, B, C, D, E and F live on six different floors of the same building. The lowermost floor in the building is numbered 1, the floor above it, number 2 and so on till the topmost floor is numbered 6. E lives on an even numbered floor but not 6. The sum of floors on which A and E live is 7. F lives immediately above B. The sum of floors on which E and",
+            "options": [
+                "How many people live between A and D?",
+                "1",
+                "2",
+                "3"
+            ],
+            "answer": "1"
+        },
+        {
+            "id": 19,
+            "question": "Thermocol disposables are being widely used in parties and restaurants. By promoting this practice ________.",
+            "options": [
+                "we are reducing expenses; disposables are cheap to use",
+                "we are increasing non-biodegradable waste",
+                "we are increasing the hygiene concern in us",
+                "we are making the waste biodegradable"
+            ],
+            "answer": "we are reducing expenses; disposables are cheap to use"
+        },
+        {
+            "id": 20,
+            "question": "",
+            "options": [
+                "124",
+                "125",
+                "107",
+                "106"
+            ],
+            "answer": "124"
+        },
+        {
+            "id": 21,
+            "question": "The Khilafat committee was formed in Bombay, to defend temporal powers of Khalifa, in _________.",
+            "options": [
+                "June 1919",
+                "July 1919",
+                "March 1919",
+                "January 1919"
+            ],
+            "answer": "June 1919"
+        },
+        {
+            "id": 22,
+            "question": "What is the name of the Lunar Polar Exploration Mission, a collaboration with Japan's JAXA which was approved by India's National Space Commission in October 2024?",
+            "options": [
+                "Lupex",
+                "SpaceX",
+                "Moonet",
+                "Mopex"
+            ],
+            "answer": "Lupex"
+        },
+        {
+            "id": 23,
+            "question": "Select the letter-cluster from among the given options that can replace the question mark (?) in the following series. OHA MFY KDW IBU ?",
+            "options": [
+                "SGZ",
+                "GZS",
+                "SZG",
+                "GSZ"
+            ],
+            "answer": "SGZ"
+        },
+        {
+            "id": 24,
+            "question": "Write the expanded form of (5a + 7b + 3c)2.",
+            "options": [
+                "25a2 + 49b2 + 9c2 + 70ab + 37bc + 30ac",
+                "25a2 + 49b2 + 9c2 + 70ab + 42bc + 30ac",
+                "25a2 + 49b2 + 9c2 + 74ab + 42bc + 30ac",
+                "25a2 + 49b2 + 9c2 + 70ab + 42bc + 40ac"
+            ],
+            "answer": "25a2 + 49b2 + 9c2 + 70ab + 37bc + 30ac"
+        },
+        {
+            "id": 25,
+            "question": "Select the letter-cluster pair that best represents a similar relationship to the one expressed in the pairs of letter-clusters given below. OQP : PTO VWV : WZU",
+            "options": [
+                "QEK : RHI",
+                "HFN : IIM",
+                "KND : LQF",
+                "NEO : OHL"
+            ],
+            "answer": "QEK : RHI"
+        },
+        {
+            "id": 26,
+            "question": "Who is the author of 'Fiction as History: The Novel and the City in Modern North India,' published in 2019?",
+            "options": [
+                "Vasudha Dalmia",
+                "Arundhati Roy",
+                "Salman Rushdie",
+                "Jhumpa Lahiri"
+            ],
+            "answer": "Vasudha Dalmia"
+        },
+        {
+            "id": 27,
+            "question": "Select the letter-cluster pair that best represents a similar relationship to the one expressed in the pairs of letter-clusters given below. NGJ : OJE MHK : NKF",
+            "options": [
+                "XHJ : YKF",
+                "LMO : MOJ",
+                "JJK : KME",
+                "KNI : LQD"
+            ],
+            "answer": "XHJ : YKF"
+        },
+        {
+            "id": 28,
+            "question": "Manyakheta was the capital of which of following dynasties during the eighth century AD?",
+            "options": [
+                "Pratiharas",
+                "Rashtrakuta",
+                "Chera",
+                "Pala"
+            ],
+            "answer": "Pratiharas"
+        },
+        {
+            "id": 29,
+            "question": "Refer to the given number, symbol series and answer the question that follows. Counting to be done from left to right only. (Left) 7 5 ^ 5 + % 5 6 $ 2 3 * 6 + 3 & 4 ? $ # 6 1 2 3 & 6 3 % @ (Right) How many such symbols are there each of which is immediately preceded by a number and immediately followed by another symbol?",
+            "options": [
+                "1",
+                "4",
+                "2",
+                "3"
+            ],
+            "answer": "1"
+        },
+        {
+            "id": 30,
+            "question": "A shopkeeper bought an article for \u20b9760. At what price (in \u20b9) should he sell the article to make 30% profit?",
+            "options": [
+                "976",
+                "988",
+                "1000",
+                "532"
+            ],
+            "answer": "976"
+        },
+        {
+            "id": 31,
+            "question": "Which of the following Constitution Amendments empowers Parliament to establish common High court for two or more than two States?",
+            "options": [
+                "9th Constitutional Amendment Act",
+                "7th Constitutional Amendment Act",
+                "6th Constitutional Amendment Act",
+                "8th Constitutional Amendment Act"
+            ],
+            "answer": "9th Constitutional Amendment Act"
+        },
+        {
+            "id": 32,
+            "question": "An electric motor converts electrical energy into:",
+            "options": [
+                "electron energy",
+                "magnetic energy",
+                "nuclear energy",
+                "mechanical energy"
+            ],
+            "answer": "electron energy"
+        },
+        {
+            "id": 33,
+            "question": "Two numbers are in the ratio 7 : 5. If the first number is increased by 14 and the second two numbers?",
+            "options": [
+                "What is the sum of the original",
+                "96",
+                "106",
+                "111"
+            ],
+            "answer": "96"
+        },
+        {
+            "id": 34,
+            "question": "The cost of a washing machine is 40% less than the cost of a TV. If the cost of the washing machine increases by 64% and that of the TV decreases by 20%, then what is the change in the total cost of 5 washing machines and 7 TVs?",
+            "options": [
+                "Increase by 13%",
+                "Decrease by 4%",
+                "Increase by 5.2%",
+                "Decrease by 5%"
+            ],
+            "answer": "Increase by 13%"
+        },
+        {
+            "id": 35,
+            "question": "",
+            "options": [
+                "",
+                "",
+                "",
+                ""
+            ],
+            "answer": ""
+        },
+        {
+            "id": 36,
+            "question": "Garden is an ecosystem because:",
+            "options": [
+                "the living organisms in it interact with each other and are affected by abiotic components",
+                "the living organisms in it interact with each other and are not affected by abiotic components",
+                "it has both plants, trees and animals like insects, frogs, birds, etc., as biotic components",
+                "it has only biotic components like plants, trees and flowers"
+            ],
+            "answer": "the living organisms in it interact with each other and are affected by abiotic components"
+        },
+        {
+            "id": 37,
+            "question": "A man sold an article for \u20b9390 by first giving a d% discount on its marked price, and then another discount having the same nominal value (in \u20b9). If the marked price of the article is \u20b93900, then what is the value of d?",
+            "options": [
+                "45",
+                "50",
+                "48",
+                "41"
+            ],
+            "answer": "45"
+        },
+        {
+            "id": 38,
+            "question": "",
+            "options": [
+                "80",
+                "70",
+                "40",
+                "100"
+            ],
+            "answer": "80"
+        },
+        {
+            "id": 39,
+            "question": "",
+            "options": [
+                "1 - C, 2 - D, 3 - A, 4 - E, 5 - B",
+                "1 - E, 2 - D, 3 - A, 4 - C, 5 - B",
+                "1 - B, 2 - D, 3 - A, 4 - E, 5 - C",
+                "1 - A, 2 - D, 3 - C, 4 - E, 5 - B"
+            ],
+            "answer": "1 - C, 2 - D, 3 - A, 4 - E, 5 - B"
+        },
+        {
+            "id": 40,
+            "question": "What is the primary function of \u2018viharas\u2019 in Buddhist architecture?",
+            "options": [
+                "To house relics",
+                "To serve as residential places for Buddhist priests",
+                "To serve as meditation halls",
+                "To hold public gatherings"
+            ],
+            "answer": "To house relics"
+        },
+        {
+            "id": 41,
+            "question": "44 men can do a piece of work in 48 days. The number of men required to complete the same work in 8 days is:",
+            "options": [
+                "260",
+                "264",
+                "266",
+                "261"
+            ],
+            "answer": "260"
+        },
+        {
+            "id": 42,
+            "question": "What industrial method is most typically used to produce sodium hydroxide (NaOH)?",
+            "options": [
+                "Castner-Kellner process",
+                "Haber process",
+                "Electrolysis of brine",
+                "Contact process"
+            ],
+            "answer": "Castner-Kellner process"
+        },
+        {
+            "id": 43,
+            "question": "What is the pH value of pure water at 25\u00b0C?",
+            "options": [
+                "3",
+                "7",
+                "5",
+                "1"
+            ],
+            "answer": "3"
+        },
+        {
+            "id": 44,
+            "question": "PN is a secant intersecting a circle at points M and N such that PN > PM. A tangent PT is drawn to the circle touching it at T. If PM = 32 cm and PT = 40 cm, what is the length (in cm) of the chord MN?",
+            "options": [
+                "36",
+                "50",
+                "20",
+                "18"
+            ],
+            "answer": "36"
+        },
+        {
+            "id": 45,
+            "question": "Read the given statements and conclusions carefully. Assuming that the informa\u0000on given in the statements is true, even if it appears to be at variance with commonly known facts, decide which of the given conclusion(s) logically follow(s) from the statements. Statements: All ovals are bins. No bin is a car. No bin is a plum. Conclusions: (I): No oval is a car. (II): Some plums are cars.",
+            "options": [
+                "Neither conclusion (I) nor (II) follows.",
+                "Both conclusions (I) and (II) follow.",
+                "Only conclusion (II) follows.",
+                "Only conclusion (I) follows."
+            ],
+            "answer": "Neither conclusion (I) nor (II) follows."
+        },
+        {
+            "id": 46,
+            "question": "In May 2024, the Indian Air Force successfully tested its Arogya Maitri Disaster Management Cube in __________.",
+            "options": [
+                "Mysuru",
+                "Agra",
+                "Bhuj",
+                "Pokhran"
+            ],
+            "answer": "Mysuru"
+        },
+        {
+            "id": 47,
+            "question": "What will come in the place of the question mark (?) in the following equation if \u2018\u00f7\u2019 and \u2018\u2212' are interchanged and \u2018+\u2019 and \u2018\u00d7\u2019 are interchanged? 10 + 52 \u2212 13 \u00d7 4 \u00f7 18 = ?",
+            "options": [
+                "24",
+                "26",
+                "22",
+                "19"
+            ],
+            "answer": "24"
+        },
+        {
+            "id": 48,
+            "question": "The average price of three items of furniture is Rs 16845. If their prices are in the ratio 3:5:7, the price of the cheapest item (in Rs) is",
+            "options": [
+                "7861",
+                "3369",
+                "5615",
+                "10107"
+            ],
+            "answer": "7861"
+        },
+        {
+            "id": 49,
+            "question": "In a certain code language, \u2018PLOT\u2019 is coded as \u20189137\u2019 and \u2018LIFE\u2019 is coded as \u20184872\u2019. What is the code for \u2018L\u2019 in the given code language?",
+            "options": [
+                "4",
+                "1",
+                "7",
+                "3"
+            ],
+            "answer": "4"
+        },
+        {
+            "id": 50,
+            "question": "Which of the following categories are NOT a class of consumers?",
+            "options": [
+                "Parasites",
+                "Herbivores",
+                "Carnivores",
+                "Producers"
+            ],
+            "answer": "Parasites"
+        },
+        {
+            "id": 51,
+            "question": "If a 1352 m long train crosses a pole in 169 seconds, then find the time (in seconds) taken by the train to cross a 256 m long platform.",
+            "options": [
+                "205",
+                "193",
+                "201",
+                "195"
+            ],
+            "answer": "205"
+        },
+        {
+            "id": 52,
+            "question": "Refer to the following number and symbol series and answer the question that follows. Counting to be done from left to right only. (Left) 6 $ < 8 1 ^ 3 * 2 @ 7 # 4 & 5 % @ 9 (Right) If all the symbols are dropped from the series, which of the following will be fifth from right?",
+            "options": [
+                "2",
+                "7",
+                "4",
+                "5"
+            ],
+            "answer": "2"
+        },
+        {
+            "id": 53,
+            "question": "If a conductor follows the Ohm\u2019s law, then the graph between current and voltage will be a/an _______.",
+            "options": [
+                "hyperbola",
+                "parabola",
+                "straight line",
+                "ellipse"
+            ],
+            "answer": "hyperbola"
+        },
+        {
+            "id": 54,
+            "question": "In which of the following cases did the Supreme Court mention that the Fundamental Right to Primary Education is the Right to Life under Article 21 of the Indian Constitution?",
+            "options": [
+                "P Sambamurthy vs Union of India",
+                "Unni Krishnan vs State of Andhra Pradesh",
+                "Navtej Singh Johar vs Union of India",
+                "Shreya Singhal vs Union of India"
+            ],
+            "answer": "P Sambamurthy vs Union of India"
+        },
+        {
+            "id": 55,
+            "question": "Which ion reduces at the cathode during electrolysis of fresh brine solution?",
+            "options": [
+                "Cl\u207b",
+                "H+",
+                "OH\u207b",
+                "Na+"
+            ],
+            "answer": "Cl\u207b"
+        },
+        {
+            "id": 56,
+            "question": "Based on the English alphabetical order, three of the following four letter-cluster pairs are alike in a certain way and thus form a group. Which letter-cluster pair DOES NOT belong to that group? (Note: The odd one out is not based on the number of consonants/vowels or their position in the letter-cluster.)",
+            "options": [
+                "NJ \u2013 SO",
+                "GB \u2013 KF",
+                "MH \u2013 QL",
+                "VQ \u2013 ZU"
+            ],
+            "answer": "NJ \u2013 SO"
+        },
+        {
+            "id": 57,
+            "question": "What should come in place of the question mark (?) in the given series based on the English alphabetical order? VCF PWZ JQT DKN ?",
+            "options": [
+                "EHX",
+                "XEH",
+                "XHE",
+                "EXH"
+            ],
+            "answer": "EHX"
+        },
+        {
+            "id": 58,
+            "question": "Rashi wants to make compost for her kitchen garden. She plans to use kitchen wastes. Which set of articles is best suited for her work?",
+            "options": [
+                "Peels of fruits, leftover vegetables, paper, torn cotton clothes.",
+                "Peels of fruits, leftover vegetables, paper, packing sheets.",
+                "Peels of fruits, leftover vegetables, plastic waste, thermocol cups.",
+                "Peels of fruits, leftover vegetables, plastic waste, old mobile phone."
+            ],
+            "answer": "Peels of fruits, leftover vegetables, paper, torn cotton clothes."
+        },
+        {
+            "id": 59,
+            "question": "What should come in place of the question mark (?) in the given series? 180 131 90 57 32 ?",
+            "options": [
+                "22",
+                "20",
+                "17",
+                "15"
+            ],
+            "answer": "22"
+        },
+        {
+            "id": 60,
+            "question": "If a resistor of 15 \u03a9 carries a current of 2.5 A for 12 seconds, the heat produced is _____ joules.",
+            "options": [
+                "450",
+                "1800",
+                "1125",
+                "900"
+            ],
+            "answer": "450"
+        },
+        {
+            "id": 61,
+            "question": "Mohan went to a cafe and ordered a soft drink. The waiter brought his order in a plastic glass with a plastic straw. Mohan, being environment friendly, is not happy as:",
+            "options": [
+                "plastic glass and plastic straw spoils the taste of the drink",
+                "plastic glass and plastic straw is non biodegradable and persists in soil for a long time",
+                "a plastic glass and plastic straw does not add to the standard of the cafe",
+                "the plastic glass and plastic straw were not of his favourite colour"
+            ],
+            "answer": "plastic glass and plastic straw spoils the taste of the drink"
+        },
+        {
+            "id": 62,
+            "question": "Write the expanded form of (6a + 5b + 8c)2.",
+            "options": [
+                "36a2 + 25b2 + 64c2 + 60ab + 80bc + 96ac",
+                "36a2 + 25b2 + 64c2 + 60ab + 80bc + 106ac",
+                "36a2 + 25b2 + 64c2 + 64ab + 80bc + 96ac",
+                "36a2 + 25b2 + 64c2 + 60ab + 75bc + 96ac"
+            ],
+            "answer": "36a2 + 25b2 + 64c2 + 60ab + 80bc + 96ac"
+        },
+        {
+            "id": 63,
+            "question": "L is brother of K. Q is married to N. Z is mother of L. N is daughter of Z. P is wife of K. How is Q related to K?",
+            "options": [
+                "Sister\u2019s husband",
+                "Mother\u2019s father",
+                "Father\u2019s brother",
+                "Brother"
+            ],
+            "answer": "Sister\u2019s husband"
+        },
+        {
+            "id": 64,
+            "question": "What should come in place of the question mark (?) in the given series? 18 49 18 45 18 41 18 ?",
+            "options": [
+                "31",
+                "34",
+                "37",
+                "29"
+            ],
+            "answer": "31"
+        },
+        {
+            "id": 65,
+            "question": "If \u2018A\u2019 stands for \u2018\u00f7\u2019, \u2018B\u2019 stands for \u2018\u00d7\u2019, \u2018C\u2019 stands for \u2018+\u2019 and \u2018D\u2019 stands for \u2018\u2212\u2019, then what will be come in place of the question mark (?) in the following equation? 13 D 32 C 36 B 49 A 49 = ?",
+            "options": [
+                "15",
+                "18",
+                "19",
+                "17"
+            ],
+            "answer": "15"
+        },
+        {
+            "id": 66,
+            "question": "What is the average of all the natural numbers from 1 to 87?",
+            "options": [
+                "45",
+                "44.5",
+                "43.5",
+                "44"
+            ],
+            "answer": "45"
+        },
+        {
+            "id": 67,
+            "question": "Evaluate 184 2",
+            "options": [
+                "33866",
+                "33856",
+                "33836",
+                "33806"
+            ],
+            "answer": "33866"
+        },
+        {
+            "id": 68,
+            "question": "In a redox reaction, reduction can be described as:",
+            "options": [
+                "loss of electrons",
+                "addition of hydrogen",
+                "addition of an electronegative element",
+                "addition of oxygen"
+            ],
+            "answer": "loss of electrons"
+        },
+        {
+            "id": 69,
+            "question": "Which metal is placed at the top of the reactivity series?",
+            "options": [
+                "Iron",
+                "Copper",
+                "Silver",
+                "Potassium"
+            ],
+            "answer": "Iron"
+        },
+        {
+            "id": 70,
+            "question": "In a certain code,\u2018silence gold words\u2019 is coded as \u2018nu mh ke\u2019,\u2018gold is precious\u2019 is coded as \u2018mh bi py\u2019 and\u2018silence is calm\u2019 is coded as \u2018nu py gh\u2019.What is the possible code for 'gold silence' in that language?",
+            "options": [
+                "mh nu",
+                "nu ke",
+                "bi ke",
+                "mh bi"
+            ],
+            "answer": "mh nu"
+        },
+        {
+            "id": 71,
+            "question": "The Fleming\u2019s right hand rule is used to find the:",
+            "options": [
+                "direction of the magnetic field associated with a current carrying conductor",
+                "direction of the current of a current carrying conductor",
+                "direction of the motion of the current carrying conductor",
+                "direction of the gravitational field"
+            ],
+            "answer": "direction of the magnetic field associated with a current carrying conductor"
+        },
+        {
+            "id": 72,
+            "question": "Which of the following teams won the 17th Edition of Indian Premier League?",
+            "options": [
+                "Mumbai Indians",
+                "Chennai Superkings",
+                "Delhi Capitals",
+                "Kolkata Knight Riders"
+            ],
+            "answer": "Mumbai Indians"
+        },
+        {
+            "id": 73,
+            "question": "Why do non-biodegradable wastes cause environmental problems?",
+            "options": [
+                "They are toxic to plants only.",
+                "They remain in the environment for a long time.",
+                "They increase soil fertility.",
+                "They can be easily recycled."
+            ],
+            "answer": "They are toxic to plants only."
+        },
+        {
+            "id": 74,
+            "question": "Select the option in which the numbers share the same relationship as that shared by the given pair of numbers. (NOTE: Operations should be performed on the whole numbers, without breaking down the numbers into its constituent digits. E.g. 13 \u2013 Operations on 13 such as adding/subtracting/multiplying etc. to 13 can be performed. Breaking down 13 into 1 and 3 and then performing mathematical operations on 1 and 3 is not allowed.) 12, 113 15, 140",
+            "options": [
+                "14, 126",
+                "8, 67",
+                "17, 136",
+                "11, 104"
+            ],
+            "answer": "14, 126"
+        },
+        {
+            "id": 75,
+            "question": "L, K, M, N, O and P are sitting around a circular table facing the centre. L sits fourth to the right of O. M sits second to the left of L. N is not the immediate neighbour of M. K sits second to the right of N. How many people are sitting between P and N, when counted from the left of N?",
+            "options": [
+                "None",
+                "One",
+                "Two",
+                "Three"
+            ],
+            "answer": "None"
+        },
+        {
+            "id": 76,
+            "question": "Which of the following states is also known as the \u2018Molassis basin\u2019, which is made up of soft unconsolidated deposits?",
+            "options": [
+                "Assam",
+                "Meghalaya",
+                "Tripura",
+                "Mizoram"
+            ],
+            "answer": "Assam"
+        },
+        {
+            "id": 77,
+            "question": "Among five people named A, B, C, D and E, each has a certain age. D is four times the is thrice the age of A, what is the age of E?",
+            "options": [
+                "If E",
+                "90",
+                "94",
+                "92"
+            ],
+            "answer": "90"
+        },
+        {
+            "id": 78,
+            "question": "Which of the following options represents the correct Lewis structure for methane (CH\u2084)?",
+            "options": [
+                "A carbon atom bonded to four hydrogen atoms with single bonds",
+                "A carbon atom bonded to one hydrogen atom with a double bond",
+                "A carbon atom bonded to two hydrogen atoms with double bonds",
+                "A carbon atom bonded to four hydrogen atoms with triple bonds"
+            ],
+            "answer": "A carbon atom bonded to four hydrogen atoms with single bonds"
+        },
+        {
+            "id": 79,
+            "question": "Which of the following is/are responsible for the depletion of the ozone layer in the atmosphere?",
+            "options": [
+                "Chlorofluorocarbons",
+                "Hydrofluorocarbons",
+                "Methane",
+                "Ethane"
+            ],
+            "answer": "Chlorofluorocarbons"
+        },
+        {
+            "id": 80,
+            "question": "Consider a conductor in the plane of the paper with current going from bottom to the top. What will be the direction of the magnetic field lines to the left of the conductor?",
+            "options": [
+                "Opposite to the direction of the current.",
+                "Perpendicular to the plane of the paper and going in.",
+                "In the direction of the current.",
+                "Perpendicular to the plane of the paper and coming out."
+            ],
+            "answer": "Opposite to the direction of the current."
+        },
+        {
+            "id": 81,
+            "question": "Why is the depletion of the ozone layer a concern for humans?",
+            "options": [
+                "It leads to increased water pollution.",
+                "It protects us from harmful radiation.",
+                "It increases soil fertility.",
+                "It promotes plant growth."
+            ],
+            "answer": "It leads to increased water pollution."
+        },
+        {
+            "id": 82,
+            "question": "Ravi has purchased an aquarium and was surprised to know that regular cleaning of aquariums is essential. Why does it have to be regularly cleaned?",
+            "options": [
+                "Dead fish and plants may spoil the electric supply of the aquarium.",
+                "Dead fish and plants are decomposed by microorganisms and smell bad.",
+                "Dead fish and plants should be disposed of in the soil, not in water.",
+                "Dead fish and plants may spoil the aeration system of the aquarium."
+            ],
+            "answer": "Dead fish and plants may spoil the electric supply of the aquarium."
+        },
+        {
+            "id": 83,
+            "question": "A and B complete a work in 17 days. If A alone can do it in 34 days then, B alone can do in______________(days).",
+            "options": [
+                "33",
+                "35",
+                "34",
+                "36"
+            ],
+            "answer": "33"
+        },
+        {
+            "id": 84,
+            "question": "What impact does human activities have on the environment?",
+            "options": [
+                "Only a positive impact",
+                "No impact",
+                "They help in waste disposal",
+                "They contribute to environmental pollution"
+            ],
+            "answer": "Only a positive impact"
+        },
+        {
+            "id": 85,
+            "question": "If a wire is stretched to quadruple its length without changing its area, what will happen to its resistivity?",
+            "options": [
+                "It halves.",
+                "It quadruples.",
+                "It remains the same.",
+                "It doubles."
+            ],
+            "answer": "It halves."
+        },
+        {
+            "id": 86,
+            "question": "Which of the following best describes why ionic compounds like potassium bromide (KBr) do NOT conduct electricity in solid form but do in molten form?",
+            "options": [
+                "Solid KBr has weak ions that do not conduct electricity.",
+                "In molten form, KBr decomposes into gaseous atoms.",
+                "Ionic bonds prevent ion movement in solid KBr.",
+                "Solid KBr consists of neutral atoms with no free electrons."
+            ],
+            "answer": "Solid KBr has weak ions that do not conduct electricity."
+        },
+        {
+            "id": 87,
+            "question": "Find the simple interest (in closest integral \u20b9) on \u20b93000 at 8% per annum rate of interest for the period from 22 February 2024 to 23 April 2024",
+            "options": [
+                "40",
+                "39",
+                "41",
+                "38"
+            ],
+            "answer": "40"
+        },
+        {
+            "id": 88,
+            "question": "Evaluate: 16 + 18 \u00f7 6 - 2 \u00d7 3",
+            "options": [
+                "16",
+                "13",
+                "12",
+                "15"
+            ],
+            "answer": "16"
+        },
+        {
+            "id": 89,
+            "question": "Which of the following is the correct definition of a homologous series?",
+            "options": [
+                "A series of compounds with the same molecular mass",
+                "A series of compounds having identical physical properties",
+                "A series of compounds having different functional groups",
+                "A series of compounds having the same functional group and similar chemical properties"
+            ],
+            "answer": "A series of compounds with the same molecular mass"
+        },
+        {
+            "id": 90,
+            "question": "The marks scored by 10 students are given below. 14, 15, 16, 17, 10, 17, 19, 13, 14, 14 The mode of the data is:",
+            "options": [
+                "17",
+                "16",
+                "15",
+                "14"
+            ],
+            "answer": "17"
+        },
+        {
+            "id": 91,
+            "question": "Which of the following articles deals with the office of the special officer for Linguistic Minorities?",
+            "options": [
+                "351-B",
+                "350-B",
+                "351-A",
+                "350-A"
+            ],
+            "answer": "351-B"
+        },
+        {
+            "id": 92,
+            "question": "",
+            "options": [
+                "",
+                "",
+                "",
+                ""
+            ],
+            "answer": ""
+        },
+        {
+            "id": 93,
+            "question": "Write the expanded form of (8a + 5b + 9c)2.",
+            "options": [
+                "64a2 + 25b2 + 81c2 + 84ab + 90bc + 144ac",
+                "64a2 + 25b2 + 81c2 + 80ab + 85bc + 144ac",
+                "64a2 + 25b2 + 81c2 + 80ab + 90bc + 144ac",
+                "64a2 + 25b2 + 81c2 + 80ab + 90bc + 154ac"
+            ],
+            "answer": "64a2 + 25b2 + 81c2 + 84ab + 90bc + 144ac"
+        },
+        {
+            "id": 94,
+            "question": "Combination reaction can be represented as:",
+            "options": [
+                "ABC \u00e0 AB + C",
+                "AB + CD \u00e0 AD + CD",
+                "AB + C \u00e0 CB + A",
+                "AB + C \u00e0 ABC"
+            ],
+            "answer": "ABC \u00e0 AB + C"
+        },
+        {
+            "id": 95,
+            "question": "",
+            "options": [
+                "1",
+                "\u22121",
+                "2",
+                "0"
+            ],
+            "answer": "1"
+        },
+        {
+            "id": 96,
+            "question": "What do the magnetic field lines around a bar magnet represent?",
+            "options": [
+                "The movement of electrons around the magnet",
+                "The flow of air around the magnet",
+                "The direction and strength of the magnetic field",
+                "The gravitational field"
+            ],
+            "answer": "The movement of electrons around the magnet"
+        },
+        {
+            "id": 97,
+            "question": "According to the Annual Report 2019-20 of the Ministry of Textiles, India's textile industry contributes what percentage to the industry output, in value terms?",
+            "options": [
+                "18%",
+                "15%",
+                "6%",
+                "7%"
+            ],
+            "answer": "18%"
+        },
+        {
+            "id": 98,
+            "question": "A, B, C, D, E, F and G live on seven different floors of the same building. The lowermost floor on the building is numbered 1, the floor above it, number 2 and so on, till the topmost floor is numbered 7. C lives on the sixth floor. Only three people live between C and F. A lives on an even numbered floor. D lives on one of the floors below B but immediately above F. E lives on one of the floors above C. Who lives on the lowermost floor?",
+            "options": [
+                "G",
+                "F",
+                "E",
+                "B"
+            ],
+            "answer": "G"
+        },
+        {
+            "id": 99,
+            "question": "How many seats did the Bhartiya Janata Party win in the Jammu & Kashmir assembly elections held in 2024?",
+            "options": [
+                "29",
+                "39",
+                "19",
+                "49"
+            ],
+            "answer": "29"
+        },
+        {
+            "id": 100,
+            "question": "Which of the following letter-clusters should replace # and % so that the pattern and relationship followed between the letter-cluster pair on the left side of :: is the same as that on the right side of ::? # : DHJ :: BFH : %",
+            "options": [
+                "# = KNP, % = VZB",
+                "# = JNP, % = WZB",
+                "# = JNP, % = VZO",
+                "# = JNP, % = VZB"
+            ],
+            "answer": "# = KNP, % = VZB"
+        }
+    ]
+}
