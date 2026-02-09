@@ -16,63 +16,65 @@ except Exception:
     st.error("Secrets not configured! Add GITHUB_TOKEN, REPO_OWNER, and REPO_NAME to Streamlit Secrets.")
     st.stop()
 
-# --- 2. ADVANCED PARSER WITH AUTO-RETRY ---
+# --- 2. SUPER-STATE PARSER (Fixes Q.5, Q.32, and Options) ---
 def parse_rrb_pdf(uploaded_file):
     all_questions = []
+    # Filters to remove noise that breaks question-option continuity
+    noise_filters = ["Adda247", "Adda 247", "Google Play", "INDIAN R", "LWAY", "AILWAY", "Subject", "Test Prime"]
+
     with pdfplumber.open(uploaded_file) as pdf:
         full_text = ""
         for page in pdf.pages:
             text = page.extract_text()
             if text:
-                # Remove common header/footer noise
-                text = re.sub(r'Adda247|Adda 247|Google Play|INDIAN RAILWAYS|RAILWAY|Test Prime', '', text)
+                for word in noise_filters:
+                    text = text.replace(word, "")
                 full_text += text + "\n"
 
-    # Regex patterns
     q_pattern = re.compile(r'Q\.(\d+)')
-    # Handles options even with leading symbols or icons
+    # Captures options 1-4 regardless of leading symbols (X/✔)
     opt_pattern = re.compile(r'.*?([1-4])\.\s*(.*)')
 
-    def extract_with_logic(text_block):
-        extracted = []
-        current_q = None
-        for line in text_block.split('\n'):
-            line = line.strip()
-            if not line: continue
-            
-            q_match = q_pattern.match(line)
-            if q_match:
-                if current_q and current_q['question']:
-                    while len(current_q['options']) < 4:
-                        current_q['options'].append("Option not detected")
-                    extracted.append(current_q)
-                current_q = {"id": int(q_match.group(1)), "question": line.replace(q_match.group(0), "").strip(), "options": [], "answer": ""}
-                continue
-
-            if current_q:
-                opt_match = opt_pattern.match(line)
-                if opt_match and len(current_q['options']) < 4:
-                    opt_text = opt_match.group(2).strip()
-                    current_q['options'].append(opt_text)
-                    if '✔' in line or 'Ans' in line: current_q['answer'] = opt_text
-                elif len(current_q['options']) < 4 and "Ans" not in line:
-                    current_q['question'] += " " + line
-        
-        if current_q:
-            while len(current_q['options']) < 4: current_q['options'].append("Option not detected")
-            extracted.append(current_q)
-        return extracted
-
-    # Pass 1: Standard Extraction
-    all_questions = extract_with_logic(full_text)
+    current_q = None
+    lines = full_text.split('\n')
     
-    # Auto-Retry Logic: If count < 100, try a more aggressive regex for question markers
-    if len(all_questions) < 100:
-        # Fallback regex for questions that might be missing the 'Q.' prefix in some extractions
-        q_pattern = re.compile(r'(?:^|\n)(\d+)\s*\n') 
-        retry_questions = extract_with_logic(full_text)
-        if len(retry_questions) > len(all_questions):
-            all_questions = retry_questions
+    for line in lines:
+        line = line.strip()
+        if not line: continue
+
+        q_match = q_pattern.match(line)
+        if q_match:
+            # Save the finished question block
+            if current_q and current_q['question']:
+                while len(current_q['options']) < 4:
+                    current_q['options'].append("Option not detected")
+                all_questions.append(current_q)
+            
+            current_q = {
+                "id": int(q_match.group(1)),
+                "question": line.replace(q_match.group(0), "").strip(),
+                "options": [],
+                "answer": ""
+            }
+            continue
+
+        if current_q:
+            opt_match = opt_pattern.match(line)
+            if opt_match and len(current_q['options']) < 4:
+                # Ensure we are capturing options in 1, 2, 3, 4 order
+                opt_text = opt_match.group(2).strip()
+                current_q['options'].append(opt_text)
+                if '✔' in line or 'Ans' in line:
+                    current_q['answer'] = opt_text
+            elif len(current_q['options']) < 4:
+                # If 4 options aren't found yet, append text to question (bridges page breaks)
+                if "Ans" not in line:
+                    current_q['question'] += " " + line
+
+    if current_q:
+        while len(current_q['options']) < 4:
+            current_q['options'].append("Option not detected")
+        all_questions.append(current_q)
 
     all_questions.sort(key=lambda x: x['id'])
     return all_questions
@@ -107,55 +109,54 @@ def delete_from_git(filename):
 def main():
     st.set_page_config(page_title="RRB Exam Master", layout="wide")
     
-    # Sidebar: Repository Management
-    st.sidebar.title("📊 Repo Management")
+    # Sidebar Status
+    st.sidebar.title("📊 Git Repository")
     quiz_files = fetch_files()
-    st.sidebar.write(f"Papers in Git: **{len(quiz_files)}**")
+    st.sidebar.write(f"Total Papers: **{len(quiz_files)}**")
     
     if quiz_files:
-        to_del = st.sidebar.selectbox("Select Paper", quiz_files)
+        st.sidebar.divider()
+        to_del = st.sidebar.selectbox("Manage Files", quiz_files)
         if st.sidebar.button("🗑️ Delete Selected"):
-            if delete_from_git(to_del).status_code == 200:
-                st.sidebar.success("Deleted!")
-                st.rerun()
+            delete_from_git(to_del)
+            st.rerun()
         if st.sidebar.button("🔥 WIPE ALL"):
             for f in quiz_files: delete_from_git(f)
             st.rerun()
 
-    tab1, tab2 = st.tabs(["📤 Upload & Analysis", "✍️ Practice Mode"])
+    tab1, tab2 = st.tabs(["📤 Bulk Upload", "✍️ Practice Quiz"])
 
+    # TAB 1: CONVERTER & ANALYSIS
     with tab1:
-        st.header("Exam PDF Processor")
+        st.header("Exam PDF to JSON Converter")
         files = st.file_uploader("Upload RRB PDFs", type="pdf", accept_multiple_files=True)
         
         if files:
-            # Analyze the first file for status
+            # Show status for the first file
             data = parse_rrb_pdf(files[0])
             count = len(data)
-            
             st.subheader(f"Analysis: {files[0].name}")
-            col1, col2 = st.columns(2)
-            col1.metric("Questions Found", f"{count}/100")
             
+            c1, c2 = st.columns(2)
+            c1.metric("Questions Found", f"{count}/100")
             if count < 100:
-                found_ids = [q['id'] for q in data]
-                missing = [i for i in range(1, 101) if i not in found_ids]
-                st.error(f"Missing IDs: {missing}")
+                missing = [i for i in range(1, 101) if i not in [q['id'] for q in data]]
+                c2.error(f"Missing IDs: {missing}")
             else:
-                st.success("Full 100-question set detected!")
-
+                c2.success("Perfect! 100/100 found.")
+            
             if st.button("🚀 Push to GitHub"):
                 for f in files:
                     qs = parse_rrb_pdf(f)
                     fname = f.name.replace(" ", "_").replace(".pdf", ".json")
                     push_to_git(fname, json.dumps({"questions": qs}, indent=4))
-                st.success("Synced successfully!")
+                st.success("Successfully synced all files!")
                 st.rerun()
 
+    # TAB 2: QUIZ
     with tab2:
         if quiz_files:
-            selected = st.selectbox("Choose Paper", quiz_files)
-            # Fetch from Git logic...
+            selected = st.selectbox("Select Paper", quiz_files)
             url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/quizzes/{selected}"
             res = requests.get(url, headers=get_headers())
             quiz = json.loads(base64.b64decode(res.json()['content']).decode())
