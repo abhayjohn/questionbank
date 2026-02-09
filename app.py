@@ -16,7 +16,7 @@ except Exception:
     st.error("Secrets not configured! Add GITHUB_TOKEN, REPO_OWNER, and REPO_NAME to Streamlit Secrets.")
     st.stop()
 
-# --- 2. SYMBOL-AGNOSTIC PARSER (Fixes Missing Options & Question Count) ---
+# --- 2. ADVANCED PARSER WITH AUTO-RETRY ---
 def parse_rrb_pdf(uploaded_file):
     all_questions = []
     with pdfplumber.open(uploaded_file) as pdf:
@@ -24,59 +24,55 @@ def parse_rrb_pdf(uploaded_file):
         for page in pdf.pages:
             text = page.extract_text()
             if text:
-                # Remove ads/noise that split questions across pages
+                # Remove common header/footer noise
                 text = re.sub(r'Adda247|Adda 247|Google Play|INDIAN RAILWAYS|RAILWAY|Test Prime', '', text)
                 full_text += text + "\n"
 
-    # Regex to find Q. followed by a number
+    # Regex patterns
     q_pattern = re.compile(r'Q\.(\d+)')
-    # IMPROVED Regex: Ignores leading symbols (X/✔) and finds "1." through "4."
+    # Handles options even with leading symbols or icons
     opt_pattern = re.compile(r'.*?([1-4])\.\s*(.*)')
 
-    current_q = None
-    
-    for line in full_text.split('\n'):
-        line = line.strip()
-        if not line: continue
-
-        q_match = q_pattern.match(line)
-        if q_match:
-            # Finalize previous question
-            if current_q and current_q['question']:
-                while len(current_q['options']) < 4:
-                    current_q['options'].append("Option missing from PDF")
-                all_questions.append(current_q)
+    def extract_with_logic(text_block):
+        extracted = []
+        current_q = None
+        for line in text_block.split('\n'):
+            line = line.strip()
+            if not line: continue
             
-            current_q = {
-                "id": int(q_match.group(1)),
-                "question": line.replace(q_match.group(0), "").strip(),
-                "options": [],
-                "answer": ""
-            }
-            continue
+            q_match = q_pattern.match(line)
+            if q_match:
+                if current_q and current_q['question']:
+                    while len(current_q['options']) < 4:
+                        current_q['options'].append("Option not detected")
+                    extracted.append(current_q)
+                current_q = {"id": int(q_match.group(1)), "question": line.replace(q_match.group(0), "").strip(), "options": [], "answer": ""}
+                continue
 
-        if current_q:
-            opt_match = opt_pattern.match(line)
-            if opt_match:
-                opt_num = opt_match.group(1)
-                opt_text = opt_match.group(2).strip()
-                
-                # Add only if we haven't reached 4 options
-                if len(current_q['options']) < 4:
+            if current_q:
+                opt_match = opt_pattern.match(line)
+                if opt_match and len(current_q['options']) < 4:
+                    opt_text = opt_match.group(2).strip()
                     current_q['options'].append(opt_text)
-                    # Detect correct answer via icon or "Ans" text
-                    if '✔' in line or 'Ans' in line:
-                        current_q['answer'] = opt_text
-            else:
-                # If we don't have 4 options, this line is part of the question body
-                if len(current_q['options']) < 4 and "Ans" not in line:
+                    if '✔' in line or 'Ans' in line: current_q['answer'] = opt_text
+                elif len(current_q['options']) < 4 and "Ans" not in line:
                     current_q['question'] += " " + line
+        
+        if current_q:
+            while len(current_q['options']) < 4: current_q['options'].append("Option not detected")
+            extracted.append(current_q)
+        return extracted
 
-    # Add last question
-    if current_q:
-        while len(current_q['options']) < 4:
-            current_q['options'].append("Option missing from PDF")
-        all_questions.append(current_q)
+    # Pass 1: Standard Extraction
+    all_questions = extract_with_logic(full_text)
+    
+    # Auto-Retry Logic: If count < 100, try a more aggressive regex for question markers
+    if len(all_questions) < 100:
+        # Fallback regex for questions that might be missing the 'Q.' prefix in some extractions
+        q_pattern = re.compile(r'(?:^|\n)(\d+)\s*\n') 
+        retry_questions = extract_with_logic(full_text)
+        if len(retry_questions) > len(all_questions):
+            all_questions = retry_questions
 
     all_questions.sort(key=lambda x: x['id'])
     return all_questions
@@ -96,9 +92,7 @@ def push_to_git(filename, content):
 def fetch_files():
     url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/quizzes"
     res = requests.get(url, headers=get_headers())
-    if res.status_code == 200:
-        return [f['name'] for f in res.json() if f['name'].endswith('.json')]
-    return []
+    return [f['name'] for f in res.json() if f['name'].endswith('.json')] if res.status_code == 200 else []
 
 def delete_from_git(filename):
     url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/quizzes/{filename}"
@@ -109,20 +103,18 @@ def delete_from_git(filename):
         return requests.delete(url, headers=get_headers(), json=payload)
     return res
 
-# --- 4. UI INTERFACE ---
+# --- 4. STREAMLIT UI ---
 def main():
     st.set_page_config(page_title="RRB Exam Master", layout="wide")
     
-    # Sidebar: Repository Status & Management
-    st.sidebar.title("📊 Repository Status")
+    # Sidebar: Repository Management
+    st.sidebar.title("📊 Repo Management")
     quiz_files = fetch_files()
     st.sidebar.write(f"Papers in Git: **{len(quiz_files)}**")
     
     if quiz_files:
-        st.sidebar.divider()
-        st.sidebar.subheader("Management")
         to_del = st.sidebar.selectbox("Select Paper", quiz_files)
-        if st.sidebar.button("🗑️ Delete Paper"):
+        if st.sidebar.button("🗑️ Delete Selected"):
             if delete_from_git(to_del).status_code == 200:
                 st.sidebar.success("Deleted!")
                 st.rerun()
@@ -130,64 +122,50 @@ def main():
             for f in quiz_files: delete_from_git(f)
             st.rerun()
 
-    tab1, tab2 = st.tabs(["📤 Upload & Status", "✍️ Practice Quiz"])
+    tab1, tab2 = st.tabs(["📤 Upload & Analysis", "✍️ Practice Mode"])
 
-    # TAB 1: CONVERTER & STATUS COUNTER
     with tab1:
-        st.header("Bulk PDF Converter")
+        st.header("Exam PDF Processor")
         files = st.file_uploader("Upload RRB PDFs", type="pdf", accept_multiple_files=True)
         
         if files:
-            # Status Counter for the first file in upload list
-            preview_data = parse_rrb_pdf(files[0])
-            total_found = len(preview_data)
+            # Analyze the first file for status
+            data = parse_rrb_pdf(files[0])
+            count = len(data)
             
-            st.subheader(f"Status for: {files[0].name}")
+            st.subheader(f"Analysis: {files[0].name}")
             col1, col2 = st.columns(2)
-            col1.metric("Questions Detected", f"{total_found}/100")
+            col1.metric("Questions Found", f"{count}/100")
             
-            if total_found < 100:
-                col2.warning("Some questions were not detected.")
-                # Identify missing IDs
-                found_ids = [q['id'] for q in preview_data]
+            if count < 100:
+                found_ids = [q['id'] for q in data]
                 missing = [i for i in range(1, 101) if i not in found_ids]
-                if missing:
-                    st.error(f"Missing Question IDs: {missing}")
+                st.error(f"Missing IDs: {missing}")
             else:
-                col2.success("Perfect capture! All 100 questions found.")
+                st.success("Full 100-question set detected!")
 
-            if st.button("🚀 Push All to GitHub"):
-                p_bar = st.progress(0)
-                for i, f in enumerate(files):
+            if st.button("🚀 Push to GitHub"):
+                for f in files:
                     qs = parse_rrb_pdf(f)
-                    clean_name = re.sub(r'\.pdf$', '', f.name).replace(" ", "_") + ".json"
-                    quiz_payload = {"metadata": {"file": f.name, "q_count": len(qs)}, "questions": qs}
-                    push_to_git(clean_name, json.dumps(quiz_payload, indent=4))
-                    p_bar.progress((i + 1) / len(files))
-                st.success("Successfully synced all papers!")
+                    fname = f.name.replace(" ", "_").replace(".pdf", ".json")
+                    push_to_git(fname, json.dumps({"questions": qs}, indent=4))
+                st.success("Synced successfully!")
                 st.rerun()
 
-    # TAB 2: QUIZ RENDERING
     with tab2:
         if quiz_files:
-            selected_quiz = st.selectbox("Select a Practice Paper", quiz_files)
-            # Fetch content from Git
-            url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/quizzes/{selected_quiz}"
+            selected = st.selectbox("Choose Paper", quiz_files)
+            # Fetch from Git logic...
+            url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/quizzes/{selected}"
             res = requests.get(url, headers=get_headers())
-            data = json.loads(base64.b64decode(res.json()['content']).decode())
+            quiz = json.loads(base64.b64decode(res.json()['content']).decode())
             
-            st.title(f"📖 {selected_quiz}")
-            user_answers = {}
-            for q in data["questions"]:
+            for q in quiz["questions"]:
                 st.write(f"**Q{q['id']}:** {q['question']}")
-                user_answers[q['id']] = st.radio("Options:", q['options'], key=f"{selected_quiz}_{q['id']}", index=None)
+                st.radio("Options", q['options'], key=f"{selected}_{q['id']}", index=None)
                 st.divider()
-            
-            if st.button("Finish & Grade"):
-                score = sum(1 for q in data["questions"] if user_answers[q['id']] == q['answer'])
-                st.sidebar.metric("Your Score", f"{score}/{len(data['questions'])}")
         else:
-            st.info("Upload and process PDFs in Tab 1 to see them here.")
+            st.info("Upload PDFs in Tab 1 to start.")
 
 if __name__ == "__main__":
     main()
