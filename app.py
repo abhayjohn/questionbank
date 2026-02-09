@@ -13,157 +13,135 @@ try:
     REPO_NAME = st.secrets["REPO_NAME"].strip()
     BRANCH = st.secrets.get("BRANCH", "main").strip()
 except KeyError:
-    st.error("Missing secrets! Please configure GITHUB_TOKEN, REPO_OWNER, and REPO_NAME in your secrets.")
+    st.error("Please configure GITHUB_TOKEN, REPO_OWNER, and REPO_NAME in Streamlit Secrets.")
     st.stop()
 
-# --- 2. PDF PARSING LOGIC ---
+# --- 2. UPDATED PARSING LOGIC ---
 def parse_rrb_pdf(uploaded_file):
     all_questions = []
     with pdfplumber.open(uploaded_file) as pdf:
         full_text = ""
         for page in pdf.pages:
-            full_text += page.extract_text() + "\n"
+            # Clean noise that interrupts option lists
+            page_text = page.extract_text()
+            page_text = re.sub(r'Adda247|A Google Play|INDIAN R|RAILWAY|Adda 247', '', page_text)
+            full_text += page_text + "\n"
 
-    # Split the text into blocks starting with Q.1, Q.2, etc.
-    blocks = re.split(r'Q\.\d+', full_text)[1:]
+    blocks = re.split(r'Q\.\s*\d+', full_text)[1:]
     
     for idx, block in enumerate(blocks):
         lines = [line.strip() for line in block.split('\n') if line.strip()]
-        question_text = ""
-        options = []
-        answer = ""
+        question_text, options, answer = "", [], ""
 
         for line in lines:
-            # Match options like "1. Option", "X 2. Option", or "✔ 3. Option"
-            if re.match(r'^([X✔]?\s*[1-4]\.)', line):
-                clean_opt = re.sub(r'^[X✔]?\s*[1-4]\.\s*', '', line)
+            # Capture options 1-4 and the text following them
+            option_match = re.match(r'^([X✔]?\s*([1-4])\.)\s*(.*)', line)
+            if option_match:
+                clean_opt = option_match.group(3).strip()
                 options.append(clean_opt)
-                # Identify correct answer based on green tick or Ans marker
                 if '✔' in line or 'Ans' in line:
                     answer = clean_opt
             elif not options and "Ans" not in line and "Source" not in line:
                 question_text += line + " "
 
-        if question_text and len(options) >= 2:
+        if question_text:
+            while len(options) < 4:
+                options.append("Option not found")
             all_questions.append({
                 "id": idx + 1,
                 "question": question_text.strip(),
                 "options": options[:4],
-                "answer": answer if answer else (options[0] if options else "")
+                "answer": answer if answer else options[0]
             })
     return all_questions
 
-# --- 3. GITHUB API LOGIC ---
+# --- 3. GITHUB API LOGIC (PUSH, FETCH, DELETE) ---
+def get_git_headers():
+    return {"Authorization": f"token {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
+
 def push_to_git(filename, content):
     url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/quizzes/{filename}"
-    headers = {
-        "Authorization": f"token {GITHUB_TOKEN}",
-        "Accept": "application/vnd.github.v3+json"
-    }
-    
-    # Check if file exists to get SHA (required for updates)
-    res = requests.get(url, headers=headers)
+    res = requests.get(url, headers=get_git_headers())
     sha = res.json().get('sha') if res.status_code == 200 else None
-    
-    payload = {
-        "message": f"Upload quiz: {filename}",
-        "content": base64.b64encode(content.encode()).decode(),
-        "branch": BRANCH
-    }
-    if sha:
-        payload["sha"] = sha
-        
-    return requests.put(url, headers=headers, json=payload)
+    payload = {"message": f"Update {filename}", "content": base64.b64encode(content.encode()).decode(), "branch": BRANCH}
+    if sha: payload["sha"] = sha
+    return requests.put(url, headers=get_git_headers(), json=payload)
+
+def delete_from_git(filename):
+    url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/quizzes/{filename}"
+    res = requests.get(url, headers=get_git_headers())
+    if res.status_code == 200:
+        sha = res.json().get('sha')
+        payload = {"message": f"Delete {filename}", "sha": sha, "branch": BRANCH}
+        return requests.delete(url, headers=get_git_headers(), json=payload)
+    return res
 
 def fetch_quiz_list():
     url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/quizzes"
-    headers = {"Authorization": f"token {GITHUB_TOKEN}"}
-    res = requests.get(url, headers=headers)
+    res = requests.get(url, headers=get_git_headers())
     if res.status_code == 200:
-        return [f['name'] for f in res.json() if f['name'].endswith('.json')]
+        return [{"name": f['name'], "sha": f['sha']} for f in res.json() if f['name'].endswith('.json')]
     return []
 
-def fetch_quiz_content(filename):
-    url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/quizzes/{filename}"
-    headers = {"Authorization": f"token {GITHUB_TOKEN}"}
-    res = requests.get(url, headers=headers)
-    if res.status_code == 200:
-        encoded_content = res.json()['content']
-        return json.loads(base64.b64decode(encoded_content).decode())
-    return None
-
-# --- 4. STREAMLIT UI ---
+# --- 4. UI COMPONENTS ---
 def main():
-    st.title("🚉 RRB JE Smart Quiz System")
-    tab1, tab2 = st.tabs(["📤 Upload & Convert", "✍️ Take Quiz"])
+    st.set_page_config(page_title="RRB Bulk Manager", layout="wide")
+    
+    # Sidebar Management
+    st.sidebar.header("📁 Repository Manager")
+    quiz_files = fetch_quiz_list()
+    if quiz_files:
+        file_to_del = st.sidebar.selectbox("Select file to delete", [f['name'] for f in quiz_files])
+        if st.sidebar.button("🗑️ Delete Selected File"):
+            resp = delete_from_git(file_to_del)
+            if resp.status_code == 200:
+                st.sidebar.success("Deleted!")
+                st.rerun()
+        
+        if st.sidebar.button("🔥 Clear All Quizzes"):
+            for f in quiz_files:
+                delete_from_git(f['name'])
+            st.sidebar.success("Repository Wiped!")
+            st.rerun()
+    else:
+        st.sidebar.info("No files to manage.")
 
-    # TAB 1: CONVERTER
+    tab1, tab2 = st.tabs(["📤 Bulk Upload & Preview", "✍️ Practice Quiz"])
+
     with tab1:
-        st.header("PDF to JSON Converter")
-        uploaded_file = st.file_uploader("Upload your RRB PDF", type="pdf")
+        st.header("Bulk Upload")
+        uploaded_files = st.file_uploader("Upload RRB PDFs", type="pdf", accept_multiple_files=True)
         
-        if uploaded_file:
-            if st.button("Extract and Sync to GitHub"):
-                with st.spinner("Parsing PDF..."):
-                    questions = parse_rrb_pdf(uploaded_file)
-                    if not questions:
-                        st.error("No questions found. Check PDF format.")
-                    else:
-                        quiz_data = {
-                            "metadata": {
-                                "exam_name": "RRB JE",
-                                "test_date": "16/12/2024", # Customize parsing to extract this
-                                "shift": "1"
-                            },
-                            "questions": questions
-                        }
-                        
-                        json_content = json.dumps(quiz_data, indent=4)
-                        # Clean filename
-                        fname = f"RRB_JE_16Dec_S1_{len(questions)}Q.json"
-                        
-                        resp = push_to_git(fname, json_content)
-                        if resp.status_code in [200, 201]:
-                            st.success(f"Success! {len(questions)} questions pushed to GitHub.")
-                        else:
-                            st.error(f"Error {resp.status_code}: {resp.json().get('message')}")
+        if uploaded_files:
+            # Preview the first file
+            st.subheader(f"Preview: {uploaded_files[0].name}")
+            preview_qs = parse_rrb_pdf(uploaded_files[0])
+            if preview_qs:
+                st.write(f"Found **{len(preview_qs)}** questions. First question options:")
+                st.write(preview_qs[0]['options'])
+            
+            if st.button("🚀 Push All to GitHub"):
+                for file in uploaded_files:
+                    qs = parse_rrb_pdf(file)
+                    clean_name = re.sub(r'\.pdf$', '', file.name).replace(" ", "_") + ".json"
+                    quiz_data = {"metadata": {"exam": "RRB JE", "file": file.name}, "questions": qs}
+                    push_to_git(clean_name, json.dumps(quiz_data, indent=4))
+                st.success("All files uploaded!")
+                st.rerun()
 
-    # TAB 2: QUIZ
     with tab2:
-        st.header("Available Practice Papers")
-        quiz_files = fetch_quiz_list()
-        
-        if not quiz_files:
-            st.info("No quizzes found in the 'quizzes' folder on GitHub.")
+        if quiz_files:
+            selected_quiz = st.selectbox("Select a Paper", [f['name'] for f in quiz_files])
+            url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/quizzes/{selected_quiz}"
+            res = requests.get(url, headers=get_git_headers())
+            data = json.loads(base64.b64decode(res.json()['content']).decode())
+            
+            for q in data["questions"]:
+                st.write(f"**Q{q['id']}:** {q['question']}")
+                st.radio("Options:", q['options'], key=f"{selected_quiz}_{q['id']}", index=None)
+                st.divider()
         else:
-            selected_quiz = st.selectbox("Choose a paper", quiz_files)
-            if selected_quiz:
-                quiz_data = fetch_quiz_content(selected_quiz)
-                
-                if quiz_data:
-                    st.subheader(f"Paper: {quiz_data['metadata']['exam_name']} - {quiz_data['metadata']['test_date']}")
-                    
-                    user_answers = {}
-                    for q in quiz_data["questions"]:
-                        st.write(f"**Q{q['id']}:** {q['question']}")
-                        user_answers[q['id']] = st.radio("Options:", q['options'], key=f"q_{q['id']}_{selected_quiz}", index=None)
-                        st.write("---")
-
-                    if st.button("Submit Quiz"):
-                        score = 0
-                        total = len(quiz_data["questions"])
-                        for q in quiz_data["questions"]:
-                            if user_answers[q['id']] == q['answer']:
-                                score += 1
-                        
-                        # Apply RRB 1/3 negative marking logic
-                        wrong = total - score
-                        final_marks = score - (wrong * (1/3))
-                        
-                        st.balloons()
-                        st.sidebar.metric("Score", f"{score}/{total}")
-                        st.sidebar.metric("Net Marks", f"{final_marks:.2f}")
-                        st.sidebar.caption("Negative Marking: 1/3 per wrong answer")
+            st.info("No quizzes found. Upload PDFs to begin.")
 
 if __name__ == "__main__":
     main()
